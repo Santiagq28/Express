@@ -11,11 +11,11 @@ router.get("/apuesta", (req,res) =>{
 
 router.get("/save", async (req,res)=> {
     const json = {
-        "nombre" : "Keiner",
-        "apellido" : "Ballesteros"
+        "nombre" : "Santiago",
+        "apellido" : "Guevara"
     }
 
-    let a = await redis.set('info:03578',
+    let a = await redis.set('info:192203',
         JSON.stringify(json), {
             EX:60
         })
@@ -23,7 +23,7 @@ router.get("/save", async (req,res)=> {
 })
 
 router.get("/get", async (req,res)=>{
-    const data = await redis.get('info:03578');
+    const data = await redis.get('info:192203');
     const json = JSON.parse(data)
     console.log(json)
     res.send(json)
