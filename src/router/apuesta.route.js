@@ -1,4 +1,4 @@
-import {Router} from "express"
+import express, {Router} from "express"
 import { createClient } from "redis";
 import { MongoClient, ObjectId } from 'mongodb';
 
@@ -7,6 +7,8 @@ const client = new MongoClient("mongodb://localhost:27017");
 const router = Router();
 const redis = createClient({ url: 'redis://localhost:6379'});
 redis.connect();
+
+router.use(express.json());
 
 const connection = async ()=> {
     try{
@@ -38,6 +40,48 @@ router.get("/getMongo/:id", async(req,res)=>{
     res.json(result);
 })
 
+router.post("/saveTournament", async (req, res)=>{
+    const db = await connection();
+    const tournament = db.collection("tournament");
+    console.log(req.body);
+    const result = await tournament.insertOne(req.body);
+    res.json(result);
+})
+
+router.post("/saveTorneos", async (req, res)=>{
+    const db = await connection();
+    const tournament = db.collection("tournament");
+    const result = await tournament.insertMany(req.body);
+})
+
+
+// $ne - > diferente
+// $gt - > mayor que // greater than
+// $gte - > mayor igual que
+// $lt - > menor que
+// $lte - > menor igual que
+//
+
+router.get("/getTorneo", async(req, res)=>{
+    const db = await connection();
+    const tournament = db.collection("tournament");
+    const filtro = {
+        //locacion : 'Ocaña',
+        //premio : {$lt : 1200},
+        //tag : { $in : ['NBA', 'juego']},
+        premio : {$lt : 1000},
+        locacion: 'Cucuta'
+    };
+    const view = {
+        nombre : 1,
+        premio : 1,
+        locacion : 1,
+        
+    };
+    const data = await tournament.find(filtro, {projection:view}).toArray();
+
+    res.json(data);
+})
 
 
 
